@@ -72,9 +72,9 @@ public class GestionBDD {
     
     public static Connection connectSurServeurM3() throws SQLException {
         return connectGeneralMySQL("92.222.25.165", 3306,
-                "m3_acoulibaly01", "m3_acoulibaly01",
-                "81aed249");
-    }
+                "nom_de_votreBDD", "votre_Identifiant",
+                "votre mot de passe");
+    } // Le nom de votre base de données est identique à votre identifiant : m3_xxxxxx01
 
     /**
      * Creation du schéma. On veut créer tout ou rien, d'où la gestion explicite
