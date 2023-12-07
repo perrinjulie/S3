@@ -5,19 +5,14 @@
 package fr.insa.coulibaly.projetm3.vuesV2;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import fr.insa.coulibaly.projetm3.model.GestionBDD;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  *
@@ -36,7 +31,11 @@ public class VuePrincipale extends VerticalLayout {
 
     public VuePrincipale() {
         try {
-            this.conn = GestionBDD.connectSurServeurM3();
+            // pour test : BdD en mémoire
+            this.conn = GestionBDD.connectSurBDDEnMemoire();
+            // sinon, vrai BdD : mais vous devez changer dans la méthode
+            // pour mettre vos identifiants
+            // this.conn = GestionBDD.connectSurServeurM3();
             this.setWidthFull();
             this.contenu = new VerticalLayout();
             this.contenu.setSizeFull();

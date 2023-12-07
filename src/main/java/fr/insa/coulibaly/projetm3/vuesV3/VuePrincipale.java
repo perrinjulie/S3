@@ -31,7 +31,11 @@ public class VuePrincipale extends VerticalLayout {
 
     public VuePrincipale() {
         try {
-            this.conn = GestionBDD.connectSurServeurM3();
+            // pour test : BdD en mémoire
+            this.conn = GestionBDD.connectSurBDDEnMemoire();
+            // sinon, vrai BdD : mais vous devez changer dans la méthode
+            // pour mettre vos identifiants
+            // this.conn = GestionBDD.connectSurServeurM3();
             this.setWidthFull();
             this.contenu = new VerticalLayout();
             this.contenu.setSizeFull();

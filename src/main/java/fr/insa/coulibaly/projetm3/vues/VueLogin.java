@@ -23,7 +23,7 @@ import java.util.Optional;
  * @author Amadou Coulibaly
  */
 @PageTitle("Login")
-@Route(value = "")
+@Route(value = "V1")
 public class VueLogin extends VerticalLayout {
 
     private Connection conn;
@@ -35,7 +35,11 @@ public class VueLogin extends VerticalLayout {
 
     public VueLogin() {
         try {
-            this.conn = GestionBDD.connectSurServeurM3();
+            // pour test : BdD en mémoire
+            this.conn = GestionBDD.connectSurBDDEnMemoire();
+            // sinon, vrai BdD : mais vous devez changer dans la méthode
+            // pour mettre vos identifiants
+            // this.conn = GestionBDD.connectSurServeurM3();
             this.setWidthFull();
             this.tfNom = new TextField("Nom");
             this.bLogin = new Button("Login");
@@ -85,7 +89,7 @@ public class VueLogin extends VerticalLayout {
             this.hlEntete = new HorizontalLayout(this.tfNom, this.bLogin, this.bInscription);
             this.add(this.hlEntete, this.taMessage);
         } catch (SQLException ex) {
-            this.add(new H3("Pas de BDD Probleme"));
+            this.add(new H3("Pas de BDD Probleme : " + ex.getLocalizedMessage()));
         }
     }
 

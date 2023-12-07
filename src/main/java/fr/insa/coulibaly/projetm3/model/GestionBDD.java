@@ -35,13 +35,7 @@ import java.util.Random;
  * @author francois
  */
 public class GestionBDD {
-    
-    private Connection conn;
-    
-    public GestionBDD(Connection conn) {
-        this.conn = conn;
-    }
-    
+        
     public static Connection connectGeneralMySQL(String host,
             int port, String database,
             String user, String pass)
@@ -75,6 +69,31 @@ public class GestionBDD {
                 "nom_de_votreBDD", "votre_Identifiant",
                 "votre mot de passe");
     } // Le nom de votre base de données est identique à votre identifiant : m3_xxxxxx01
+    
+    /**
+     * la base de donnée est crée en mémoire.
+     * Elle est donc perdue (et recrée) à chaque démarrage du programme.
+     * Il est clair que cela n'est utile qu'en phase de développement, ou comme
+     * ici pour permettre de faire une petite démo sans vrai serveur, utilisateur
+     * mot de passe
+     * @return 
+     */
+    public static Connection connectSurBDDEnMemoire() throws SQLException {
+        Connection con = DriverManager.getConnection(
+                "jdbc:h2:mem:projM3",
+                null,null);
+        con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        // j'initialise la BdD si besoin (si la table li_client n'existe pas)
+        // dans le cas d'une vraie BdD (pas en mémoire) la création du schéma
+        // est sensé se faire une fois pour toute "hors ligne" et certainement
+        // pas à chaque connection
+        ResultSet tables = con.getMetaData().getTables(null, null, null, new String[] {"li_client","LI_CLIENT"});
+        if (! tables.next()) {
+            razBDD(con);
+        }
+        return con;
+        
+    }
 
     /**
      * Creation du schéma. On veut créer tout ou rien, d'où la gestion explicite
@@ -82,9 +101,9 @@ public class GestionBDD {
      *
      * @throws SQLException
      */
-    public void creeSchema() throws SQLException {
-        this.conn.setAutoCommit(false);
-        try ( Statement st = this.conn.createStatement()) {
+    public static void creeSchema(Connection conn) throws SQLException {
+        conn.setAutoCommit(false);
+        try ( Statement st = conn.createStatement()) {
             st.executeUpdate(
                     "create table li_client (\n"
                     + "    id integer not null primary key AUTO_INCREMENT,\n"
@@ -92,12 +111,12 @@ public class GestionBDD {
                     + "    pass varchar(30) not null\n"
                     + ")\n"
             );
-            this.conn.commit();
+            conn.commit();
         } catch (SQLException ex) {
-            this.conn.rollback();
+            conn.rollback();
             throw ex;
         } finally {
-            this.conn.setAutoCommit(true);
+            conn.setAutoCommit(true);
         }
     }
 
@@ -108,8 +127,8 @@ public class GestionBDD {
      *
      * @throws SQLException
      */
-    public void deleteSchema() throws SQLException {
-        try ( Statement st = this.conn.createStatement()) {
+    public static void deleteSchema(Connection conn) throws SQLException {
+        try ( Statement st = conn.createStatement()) {
             // pour être sûr de pouvoir supprimer, il faut d'abord supprimer les liens
             // puis les tables
             // suppression des liens
@@ -120,14 +139,14 @@ public class GestionBDD {
         }
     }
     
-    public void initTest() throws SQLException {
-        
+    public static void initTest(Connection conn) throws SQLException {
+        inscription(conn, "toto");
     }
     
-    public void razBDD() throws SQLException {
-        this.deleteSchema();
-        this.creeSchema();
-        this.initTest();
+    public static void razBDD(Connection conn) throws SQLException {
+        deleteSchema(conn);
+        creeSchema(conn);
+        initTest(conn);
     }
     
     public static Optional<String> inscription(Connection con, String nom) throws SQLException {
@@ -167,8 +186,7 @@ public class GestionBDD {
     public static void debut() {
         try ( Connection con = connectSurServeurM3()) {
             System.out.println("connecté");
-            GestionBDD gestionnaire = new GestionBDD(con);
-            gestionnaire.razBDD();
+            razBDD(con);
             System.out.println("bdd cree");
         } catch (SQLException ex) {
             throw new Error("Connection impossible", ex);
@@ -179,10 +197,4 @@ public class GestionBDD {
         debut();
     }
 
-    /**
-     * @return the conn
-     */
-    public Connection getConn() {
-        return conn;
-    }
 }
