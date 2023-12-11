@@ -15,8 +15,6 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  */
 
 
-// BONNNJOUUUR
-
 
 @SpringBootApplication
 @Theme(value = "mytodo")
